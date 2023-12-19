@@ -14,4 +14,4 @@ Os ponteiros para funções são uma característica poderosa e flexível que pe
 
 ## Links úteis
 
--   [https://stackoverflow.com/questions/70043572/removing-elements-from-array-in-c](Como remover elementos de uma array em C)
+-   [Como remover elementos de uma array em C](https://stackoverflow.com/questions/70043572/removing-elements-from-array-in-c)
