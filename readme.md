@@ -9,13 +9,16 @@ Para compilar e executar o código em Haskell:
 
 Para executar um arquivo diretamente em Haskell:
 
-```haskell
+```shell
 ghci [nome do arquivo].hs
 main
 ```
 
-> [!NOTE]
+<br />
+
+> [!TIP]
 > Para sair de um terminal `ghci`, basta inserir
-> ```haskell
+>
+> ```shell
 > :quit
 > ```
