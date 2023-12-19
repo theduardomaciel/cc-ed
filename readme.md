@@ -14,4 +14,8 @@ ghci [nome do arquivo].hs
 main
 ```
 
-[!INFO] Para sair de um terminal `ghci`, basta inserir `:quit`
+> [!NOTE]
+> Para sair de um terminal `ghci`, basta inserir
+> ```haskell
+> :quit
+> ```
