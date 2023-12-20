@@ -33,7 +33,7 @@ void merge(int arr[], int l, int m, int r, bool isDescending)
     // Index inicial da segunda sub-array
     j = 0;
 
-    // Index inicial da sub-array mesclada
+    // Index inicial da sub-array mesclada (merged sub-array)
     k = l;
     while (i < n1 && j < n2)
     {
@@ -93,14 +93,14 @@ void mergeSort(int arr[], int left, int right)
     if (left < right)
     {
         // A mesma coisa que (left + right) / 2, mas evita o overflow para left e right grandes
-        int m = left + (right - left) / 2;
+        int middle = left + (right - left) / 2;
 
         // Ordena a primeira e a segunda metade
-        mergeSort(arr, left, m);
-        mergeSort(arr, m + 1, right);
+        mergeSort(arr, left, middle);
+        mergeSort(arr, middle + 1, right);
 
         // Junta as metades ordenadas
-        merge(arr, left, m, right, true);
+        merge(arr, left, middle, right, true);
     }
 }
 
