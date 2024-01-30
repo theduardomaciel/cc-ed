@@ -24,18 +24,6 @@ void bubble_sort_v2(int *v, int size)
     }
 }
 
-/* void bubble_sort_v3(int *v, int size)
-{
-    for (int j = size - 1; j >= 0; j--) // Os elementos agora não estão mais sendo comparados com os elementos já ordenados
-    {
-        for (int i = 0; i < j; i++)
-        {
-            if (v[i] > v[i + 1])
-                swap(&v[i], &v[i + 1]);
-        }
-    }
-} */
-
 int main()
 {
     int SIZE = 6;
