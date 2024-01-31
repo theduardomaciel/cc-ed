@@ -4,19 +4,17 @@
 typedef struct node node;
 struct node
 {
-    int item;
+    void *item;
     node *next;
 };
-// ou, retira-se o "typedef" acima" acima, e utiliza-se, na definição do ponteiro "next", struct node *next;
 
 // Abstract Data Type (ADT)
 
 node *create_linked_list();
-node *add(node *head, int item);
-node *search(node *head, int item);
-node *remove_item(node *head, int item);
+node *add(node *head, void *item);
+node *search(node *head, void *item, int (*equal)(void *item1, void *item2));
+node *remove_item(node *head, void *item);
 int is_empty(node *head);
-void print_linked_list(node *head);
 
 // -----------====================----------------
 
@@ -30,7 +28,7 @@ int is_empty(node *head)
     return (head == NULL);
 }
 
-node *add(node *head, int item)
+node *add(node *head, void *item)
 {
     node *new_node = (node *)malloc(sizeof(node));
     // malloc() returns a void pointer (void *), which indicates that it is a pointer to a region of unknown data type. Therefore, we must cast it to the correct data type so that we can use it in our program.
@@ -39,20 +37,22 @@ node *add(node *head, int item)
     return new_node;
 }
 
-node *search(node *head, int item)
+node *search(node *head, void *item, int (*equal)(void *item1, void *item2))
 {
-    while (head != NULL)
     {
-        if (head->item == item)
+        while (head != NULL)
         {
-            return head;
+            if ((*equal)(head->item, item))
+            {
+                return head;
+            }
+            head = head->next;
         }
-        head = head->next;
+        return NULL;
     }
-    return NULL;
 }
 
-node *remove_item(node *head, int item)
+node *remove_item(node *head, void *item)
 {
     node *previous = NULL;
     node *current = head;
@@ -77,36 +77,42 @@ node *remove_item(node *head, int item)
     return head;
 }
 
-void print_linked_list(node *head)
+// ------------------------------------------------
+
+void print_linked_list_of_integers(node *head)
 {
     while (head != NULL)
     {
-        printf("%d\n", head->item);
+        printf("%d\n", *((int *)head->item));
         head = head->next;
     }
 }
 
-void print_linked_list_recursively(node *head)
+void print_linked_list_of_strings(node *head)
 {
-    if (!is_empty(head))
+    while (head != NULL)
     {
-        printf("%d\n", head->item);
-        print_linked_list(head->next);
+        printf("%s\n", (char *)head->item);
+        head = head->next;
     }
 }
+
+// ------------------------------------------------
 
 int main()
 {
     node *list = create_linked_list();
 
-    list = add(list, 3);
-    list = add(list, 9);
-    list = add(list, 27);
-    list = add(list, 81);
-    list = add(list, 243);
+    list = add(list, (void *)10);
+
+    int b = 20;
+    list = add(list, &b);
+
+    int c = 30;
+    list = add(list, &c);
 
     printf("Complete list: \n");
-    print_linked_list(list);
+    print_linked_list_of_integers(list);
 
     return 0;
 }

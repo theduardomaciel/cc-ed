@@ -4,13 +4,23 @@ Repositório contendo todos os arquivos fonte desenvolvidos durante a matéria E
 
 ### Snippets gerais
 
-Para compilar e executar o código em Haskell:
-`ghc [nome do arquivo].hs && ./[nome do arquivo]`
+
+#### Em C
+Para compilar e executar o código em C: `gcc [caminho].c -o [nome de saída].out && ./[nome de saída]`
+
+> [!NOTE]
+> Os arquivos compilados devem possui a extensão `.out` para serem incluídos no .gitignore e, assim, não serem enviados para o repositório remoto.
+
+______________________
+
+#### Em Haskell
+
+Para compilar e executar o código em Haskell: `ghc [caminho].hs && ./[nome do arquivo]`
 
 Para executar um arquivo diretamente em Haskell:
 
-```shell
-ghci [nome do arquivo].hs
+```
+ghci [caminho].hs
 main
 ```
 
