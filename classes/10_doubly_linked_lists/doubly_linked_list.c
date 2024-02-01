@@ -85,22 +85,28 @@ node *remove_item(node *head, int item)
     return head;
 }
 
-void print_doubly_linked_list_backward(node *tail)
-{
-    if (tail != NULL)
-    {
-        printf("%d ", tail->item);
-        print_doubly_linked_list_backward(tail->previous);
-    }
-    printf("\n");
-}
-
 void print_doubly_linked_list_forward(node *head)
 {
     while (head != NULL)
     {
         printf("%d ", head->item);
         head = head->next;
+    }
+    printf("\n");
+}
+
+void print_doubly_linked_list_backward(node *head)
+{
+    // Gambiarra para pegar o último elemento da lista
+    while (head->next != NULL)
+    {
+        head = head->next;
+    }
+
+    while (head != NULL)
+    {
+        printf("%d ", head->item);
+        head = head->previous;
     }
     printf("\n");
 }
@@ -131,6 +137,8 @@ int main()
 
     printf("Removed 100, 90, 80, 30, 20, 10\n");
     print_doubly_linked_list_forward(head);
+
+    print_doubly_linked_list_backward(head);
 
     printf("Searching for 100: ");
     printf("Value: %d\n", search(head, 100) ? search(head, 100)->item : -1);

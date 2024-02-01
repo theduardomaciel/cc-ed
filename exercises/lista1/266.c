@@ -15,7 +15,6 @@ node *create_linked_list();
 node *add(node *head, int item);
 node *search(node *head, int item);
 node *remove_item(node *head, int item);
-int is_empty(node *head);
 void print_linked_list(node *head);
 
 // -----------====================----------------
@@ -25,15 +24,10 @@ node *create_linked_list()
     return NULL;
 }
 
-int is_empty(node *head)
-{
-    return (head == NULL);
-}
-
 node *add(node *head, int item)
 {
     node *new_node = (node *)malloc(sizeof(node));
-    // malloc() returns a void pointer (void *), which indicates that it is a pointer to a region of unknown data type. Therefore, we must cast it to the correct data type so that we can use it in our program.
+    // "malloc() returns a void pointer (void *), which indicates that it is a pointer to a region of unknown data type. Therefore, we must cast it to the correct data type so that we can use it in our program"
     new_node->item = item;
     new_node->next = head;
     return new_node;
@@ -87,27 +81,55 @@ void print_linked_list(node *head)
     printf("\n");
 }
 
-void print_linked_list_recursively(node *head)
-{
-    if (!is_empty(head))
-    {
-        printf("%d\n", head->item);
-        print_linked_list(head->next);
-    }
-}
+/*
+    Descrição:
+        Escreva uma função que ordena em ordem crescente uma lista encadeada sem criar uma nova lista.
+
+    Formato de Entrada:
+        Uma lista encadeada onde cada nó possui um número.
+
+    Formato de Saída:
+       Uma lista encadeada onde cada nó possui um número. Os nós devem estar em ordem crescente.
+
+    Exemplo de Entrada:
+        80 75 5 10 50 2 3 2 70 52 22 21
+
+    Exemplo de Saída:
+        2 2 3 5 10 21 22 50 52 70 75 80
+*/
 
 int main()
 {
-    node *list = create_linked_list();
+    node *head = create_linked_list();
 
-    list = add(list, 3);
-    list = add(list, 9);
-    list = add(list, 27);
-    list = add(list, 81);
-    list = add(list, 243);
+    int value;
+    while (scanf("%d", &value) != EOF)
+    {
+        head = add(head, value);
+    }
 
-    printf("Complete list: \n");
-    print_linked_list(list);
+    node *current = head;
+    node *next = NULL;
+
+    while (current != NULL)
+    {
+        next = current->next;
+        while (next != NULL)
+        {
+            // Verifica se o item do nó atual é maior que o item do próximo nó
+            if (current->item > next->item)
+            {
+                // Se for, troca os itens dos nós, ou seja, o item seguinte que é menor vai para trás
+                int temp = current->item;
+                current->item = next->item;
+                next->item = temp;
+            }
+            next = next->next;
+        }
+        current = current->next;
+    }
+
+    print_linked_list(head);
 
     return 0;
 }
