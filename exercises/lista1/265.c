@@ -110,38 +110,61 @@ node *remove_item(node *head, char item)
           5
 */
 
+void print_linked_list(node *head)
+{
+    while (head != NULL)
+    {
+        printf("%d ", head->item);
+        head = head->next;
+    }
+    printf("\n");
+}
+
 int main()
 {
     char text[100];
-    fgets(text, 100, stdin);
+    scanf("%[^\n]", text);
 
     node *head = create_linked_list();
 
-    char characters_and_frequencies[256][2] = {0}; // 0: character, 1: frequency
-
-    // Como é proibido navegar pela lista que está sendo criada, mapeamos os caracteres e suas frequências em uma matriz
-    for (int i = 0; text[i] != '\0'; i++)
+    /* for (int i = 0; i < 256; i++)
     {
-        // Caso o caractere ainda não esteja na matriz, adicionamos ele
-        if (characters_and_frequencies[text[i]][0] == 0)
+        for (int j = 0; text[j] != '\0'; j++)
         {
-            characters_and_frequencies[text[i]][0] = text[i];
+            if (text[j] == i)
+            {
+                node *item = search(head, text[j]);
+                if (item == NULL)
+                {
+                    head = add(head, text[j]);
+                }
+                else
+                {
+                    item->frequency++;
+                }
+            }
         }
-        // E incrementamos a frequência
-        characters_and_frequencies[text[i]][1]++;
+    } */
+
+    // Como não podemos navegar pela lista, vamos fazer um loop para cada caractere da tabela ASCII
+    for (int i = 0; i < 256; i++)
+    {
+        int frequency = 0;
+        for (int j = 0; text[j] != '\0'; j++) // sabia nem que dava pra fazer isso
+        {
+            if (text[j] == i)
+            {
+                frequency++;
+            }
+        }
+        if (frequency > 0)
+        {
+            head = add(head, i);
+            head->frequency = frequency;
+        }
     }
 
-    // Criamos a lista
-    for (int i = 0; text[i] != '\0'; i++) // não fazia ideia de que dá pra fazer isso
-    {
-        // Caso o caractere ainda não tenha sido adicionado à lista, adicionamos ele
-        if (characters_and_frequencies[text[i]][0] != 0)
-        {
-            head = add(head, characters_and_frequencies[text[i]][0]);
-            head->frequency = characters_and_frequencies[text[i]][1];
-            characters_and_frequencies[text[i]][0] = 0;
-        }
-    }
+    // print_linked_list(head);
 
     // Imprimimos a lista
     while (head != NULL)
@@ -152,3 +175,18 @@ int main()
 
     return 0;
 }
+
+/*
+    for (int i = 0; text[i] != '\0'; i++)
+    {
+        node *item = search(head, text[i]);
+        if (item == NULL)
+        {
+            head = add(head, text[i]);
+        }
+        else
+        {
+            item->frequency++;
+        }
+    }
+*/

@@ -7,21 +7,21 @@ struct node
 {
     int item;
     node *next;
-    node *previous;
 };
+// ou, retira-se o "typedef" acima" acima, e utiliza-se, na definição do ponteiro "next", struct node *next;
 
 // Abstract Data Type (ADT)
-node *create_doubly_linked_list();
+
+node *create_linked_list();
 node *add(node *head, int item);
 node *search(node *head, int item);
 node *remove_item(node *head, int item);
 int is_empty(node *head);
-void print_doubly_linked_list_forward(node *head);
-void print_doubly_linked_list_backward(node *tail);
+void print_linked_list(node *head);
 
 // -----------====================----------------
 
-node *create_doubly_linked_list()
+node *create_linked_list()
 {
     return NULL;
 }
@@ -31,17 +31,30 @@ int is_empty(node *head)
     return (head == NULL);
 }
 
+// Nesse caso, vamos precisar inserir no fim da lista
 node *add(node *head, int item)
 {
     node *new_node = (node *)malloc(sizeof(node));
+
     new_node->item = item;
-    new_node->next = head;
-    new_node->previous = NULL;
+    new_node->next = NULL;
 
-    if (head != NULL)
-        head->previous = new_node;
+    if (head == NULL)
+    {
+        return new_node;
+    }
 
-    return new_node;
+    // Vamos percorrer a lista até o último elemento
+    node *current = head; // current (ou temp) é um ponteiro que aponta para o mesmo lugar que head
+    while (current->next != NULL)
+    {
+        current = current->next;
+    }
+
+    // Agora que encontramos o último elemento, podemos adicionar o novo nó
+    current->next = new_node;
+
+    return head;
 }
 
 node *search(node *head, int item)
@@ -59,49 +72,41 @@ node *search(node *head, int item)
 
 node *remove_item(node *head, int item)
 {
+    node *previous = NULL;
     node *current = head;
-
     while (current != NULL && current->item != item)
+    {
+        previous = current;
         current = current->next;
-
+    }
     if (current == NULL)
+    {
         return head;
-
-    if (head == current)
+    }
+    if (previous == NULL)
     {
         head = current->next;
     }
     else
     {
-        current->previous->next = current->next;
+        previous->next = current->next;
     }
-
-    if (current->next != NULL)
-    {
-        current->next->previous = current->previous;
-    }
-
     free(current);
-
     return head;
 }
 
-void print_doubly_linked_list_backward(node *tail)
+void print_linked_list(node *head)
 {
-    if (tail != NULL)
-    {
-        printf("%d ", tail->item);
-        print_doubly_linked_list_backward(tail->previous);
-    }
-    printf("\n");
-}
-
-void print_doubly_linked_list_forward(node *head)
-{
+    int i = 1;
     while (head != NULL)
     {
         printf("%d ", head->item);
+        if (i >= 10)
+        {
+            printf(" ");
+        }
         head = head->next;
+        i++;
     }
     printf("\n");
 }
@@ -124,112 +129,86 @@ void print_doubly_linked_list_forward(node *head)
         3 5
 */
 
-/* void encontrarMaiorSequencia(node *head)
+void get_largest_sequence(node *head)
 {
-    int inicioAtual = -1, fimAtual = -1;
-    int inicioMax = -1, fimMax = -1;
-    int contador = 0;
-    int posicao = 1;
+    int start = -1, end = -1;
+    int current_start = -1, current_end = -1;
+    int position = 0;
 
     while (head != NULL)
     {
+        // printf("item: %d\n", head->item);
+
         if (head->item == 0)
         {
-            if (inicioAtual == -1)
+            if (current_start == -1)
             {
-                inicioAtual = posicao;
+                current_start = position;
             }
-            fimAtual = posicao;
-            contador++;
+            current_end = position;
         }
         else
         {
-            if (contador > 0 && contador > (fimMax - inicioMax + 1))
-            {
-                inicioMax = inicioAtual;
-                fimMax = fimAtual;
-            }
-            inicioAtual = -1;
-            fimAtual = -1;
-            contador = 0;
+            current_start = current_end = -1;
+        }
+
+        // printf("current_start: %d, current_end: %d\n", current_start, current_end);
+        // printf("start: %d, end: %d\n", start, end);
+
+        if (current_end - current_start > end - start || (start == -1 && end == -1))
+        {
+            start = current_start;
+            end = current_end;
         }
 
         head = head->next;
-        posicao++;
+        position++;
     }
 
-    if (contador > 0 && contador > (fimMax - inicioMax + 1))
+    if (start != -1 && end != -1)
     {
-        inicioMax = inicioAtual;
-        fimMax = fimAtual;
+        printf("%d %d\n", start ? start : 0, end ? end : 0);
     }
-
-     printf("%d %d\n", inicioMax, fimMax);
-} */
+}
 
 int main()
 {
     node *list = create_linked_list();
 
-    char input[100];
-    fgets(input, 100, stdin);
+    char input[100000];
+    fgets(input, 100000, stdin);
 
     int size = 0;
 
     for (int i = 0; i < strlen(input); i++)
     {
-        if (input[i] == '0' || input[i] == '1')
+        /* if (input[i] == '0' || input[i] == '1')
         {
-            // printf("Adicionando %d à lista\n", input[i] - '0');
-            list = add(list, input[i] - '0');
-            size++;
-        }
+
+        } */
+        // printf("Adicionando %d à lista\n", input[i] - '0');
+        list = add(list, input[i] - '0');
+        size++;
     }
 
     getchar(); // Consumimos o zero que encerra a entrada
 
+    /*
+    // Contagem de trás pra frente
     for (int i = size; i >= 0; i--)
+    {
+        printf("%d ", i);
+    } */
+
+    /* for (int i = 0; i < size; i++)
     {
         printf("%d ", i);
     }
     printf("\n");
 
-    print_linked_list(list);
-    print_linked_list(list);
+    print_linked_list(list); */
 
-    node *current = list;
-
-    int current_pos = 0;
-    int start = 0, end = 0;
-    int can_update_start = 0;
-    int max_start = 0, max_end = 0;
-
-    while (current != NULL)
-    {
-        if (current->item == 0 && can_update_start)
-        {
-            printf("Encontrado um (início) na posição %d\n", current_pos);
-            start = current_pos;
-            can_update_start = 0;
-        }
-        else if (current->item == 1 && !can_update_start)
-        {
-            printf("Encontrado um (fim) na posição %d\n", current_pos);
-            end = current_pos - 1;
-            can_update_start = 1;
-            if (end - start >= max_end - max_start)
-            {
-                max_start = start;
-                max_end = end;
-                printf("Nova maior sequência de 0s: %d-%d\n", max_start, max_end);
-            }
-        }
-
-        current_pos++;
-        current = current->next;
-    }
-
-    encontrarMaiorSequencia(list);
+    get_largest_sequence(list);
 
     return 0;
 }
