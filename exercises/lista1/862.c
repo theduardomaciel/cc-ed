@@ -138,77 +138,81 @@ void get_largest_sequence(node *head)
     while (head != NULL)
     {
         // printf("item: %d\n", head->item);
-
         if (head->item == 0)
         {
+            // Se não tivermos um início, setamos o início como a posição atual
             if (current_start == -1)
             {
                 current_start = position;
             }
+
+            // Por fim, atualizamos o fim
             current_end = position;
         }
         else
         {
-            current_start = current_end = -1;
+            // Se encontramos um 1, resetamos os valores, pois a sequência de 0s acabou
+            current_start = -1;
+            current_end = -1;
+            // ou current_start = current_end = -1;
         }
 
         // printf("current_start: %d, current_end: %d\n", current_start, current_end);
         // printf("start: %d, end: %d\n", start, end);
 
-        if (current_end - current_start > end - start || (start == -1 && end == -1))
+        // Se a sequência atual for maior que a maior sequência encontrada até agora, atualizamos os valores
+        if ((current_end - current_start > end - start) || (start == -1 && end == -1))
         {
             start = current_start;
             end = current_end;
         }
 
+        // Navegamos para o próximo elemento da lista
         head = head->next;
         position++;
     }
 
-    if (start != -1 && end != -1)
-    {
-        printf("%d %d\n", start ? start : 0, end ? end : 0);
-    }
+    printf("%d %d\n", start != -1 ? start : 0, end != -1 ? end : 0);
 }
 
 int main()
 {
     node *list = create_linked_list();
 
-    char input[100000];
-    fgets(input, 100000, stdin);
+    // Loopamos o input até que o usuário insira um "0" isolado no console
+    char input[1000];
 
-    int size = 0;
+    // Obtemos o primeiro input
+    scanf("%s", &input);
 
-    for (int i = 0; i < strlen(input); i++)
+    // printf("input: %s\n", input);
+
+    while (strcmp(input, "0") != 0)
     {
-        /* if (input[i] == '0' || input[i] == '1')
+        // Adicionamos cada caractere da string de input na lista
+        for (int i = 0; i < strlen(input); i++)
         {
+            list = add(list, input[i] - '0');
+        }
+        // print_linked_list(list);
 
-        } */
-        // printf("Adicionando %d à lista\n", input[i] - '0');
-        list = add(list, input[i] - '0');
-        size++;
+        // Obtemos a maior sequência de 0s
+        get_largest_sequence(list);
+
+        // Resetamos a lista
+        list = create_linked_list();
+
+        // Obtemos o próximo input
+        scanf("%s", &input);
     }
 
-    getchar(); // Consumimos o zero que encerra a entrada
+    return 0;
+}
 
-    /*
+/*
     // Contagem de trás pra frente
     for (int i = size; i >= 0; i--)
     {
         printf("%d ", i);
-    } */
-
-    /* for (int i = 0; i < size; i++)
-    {
-        printf("%d ", i);
     }
-    printf("\n");
-
-    print_linked_list(list); */
-
-    get_largest_sequence(list);
-
-    return 0;
-}
+*/

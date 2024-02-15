@@ -81,11 +81,14 @@ node *remove_item(node *head, int item)
 
 void print_linked_list(node *head)
 {
+    // int size = 0;
     while (head != NULL)
     {
         printf("%d ", head->item);
         head = head->next;
+        // size++;
     }
+    // printf("Size: %d\n", size);
     printf("\n");
 }
 
@@ -125,25 +128,39 @@ int main()
     node *number1 = create_linked_list();
     node *number2 = create_linked_list();
 
-    char n;
-    while (scanf("%c ", &n) != EOF)
+    char n = getchar();
+    while (n != '+')
     {
-        // printf("n de 1: %d\n", n);
-        if (n == '+')
+        // Ignoramos caracteres que possam atrapalhar, como espaços, quebras de linha e tabs
+        if (n == ' ' || n == '\n' || n == '\t')
         {
-            break;
+            n = getchar();
+            continue;
         }
-        number1 = add(number1, atoi(&n));
+
+        // printf("n de 1: %d\n", n - '0');
+
+        number1 = add(number1, n - '0');
+        n = getchar();
     }
 
-    while (scanf("%c ", &n) != EOF)
+    n = getchar(); // Ignoramos o sinal de adição
+
+    while (n != '=')
     {
-        // printf("n de 2: %d\n", n);
-        if (n == '=')
+        // printf("Atual: %c\n", n);
+
+        //  Ignoramos caracteres que possam atrapalhar, como espaços, quebras de linha e tabs
+        if (n == ' ' || n == '\n' || n == '\t')
         {
-            break;
+            n = getchar();
+            continue;
         }
-        number2 = add(number2, atoi(&n));
+
+        // printf("n de 2: %d\n", n - '0');
+
+        number2 = add(number2, n - '0');
+        n = getchar();
     }
 
     /* printf("Lista 1: ");
@@ -155,6 +172,12 @@ int main()
 
     int carry = 0;
     node *result = create_linked_list();
+
+    if (is_empty(number1) && is_empty(number2))
+    {
+        printf("Lista vazia!\n");
+        return 0;
+    }
 
     while (!is_empty(number1) || !is_empty(number2))
     {

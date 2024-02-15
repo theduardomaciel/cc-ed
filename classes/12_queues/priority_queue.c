@@ -1,19 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct node node;
-struct node
+typedef struct node
 {
     int item;
     int priority;
-    node *next;
-};
+    struct node *next;
+} node;
 
-typedef struct priority_queue priority_queue;
-struct priority_queue
+typedef struct priority_queue
 {
     node *head;
-};
+} priority_queue;
 
 // Abstract Data Type (ADT)
 
@@ -68,13 +66,11 @@ node *dequeue(priority_queue *pq)
         printf("Priority Queue underflow\n");
         return NULL;
     }
-    else
-    {
-        node *node = pq->head;
-        pq->head = pq->head->next;
-        node->next = NULL;
-        return node;
-    }
+
+    node *temp = pq->head;
+    pq->head = pq->head->next;
+    temp->next = NULL;
+    return temp;
 }
 
 int maximum(priority_queue *pq)
