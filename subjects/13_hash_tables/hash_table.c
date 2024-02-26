@@ -21,7 +21,7 @@ typedef struct hash_table hash_table;
 hash_table *create_hash_table();
 void put(hash_table *ht, int key, int value);
 int get(hash_table *ht, int key);
-void remove(hash_table *ht, int key);
+void remove_key(hash_table *ht, int key);
 int contains_key(hash_table *ht, int key);
 void print_hash_table(hash_table *ht);
 
@@ -75,7 +75,7 @@ int get(hash_table *ht, int key)
     return -100;
 }
 
-void remove(hash_table *ht, int key)
+void remove_key(hash_table *ht, int key)
 {
     int h = key % 11;
     while (ht->table[h] != NULL)
@@ -130,7 +130,7 @@ int main()
     printf("%d\n", get(ht, 3));
     printf("%d\n", get(ht, 14));
 
-    remove(ht, 15);
+    remove_key(ht, 15);
     printf("%d\n", get(ht, 92));
 
     return 0;

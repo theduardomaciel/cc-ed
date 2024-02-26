@@ -17,7 +17,7 @@ struct queue
 queue *create_queue();
 void enqueue(queue *queue, int item);
 int dequeue(queue *queue);
-int is_empty(queue *queue);
+int is_queue_empty(queue *queue);
 void print_queue(queue *queue);
 
 // -----------====================----------------
@@ -31,7 +31,7 @@ queue *create_queue()
     return new_queue;
 }
 
-int is_empty(queue *queue)
+int is_queue_empty(queue *queue)
 {
     return (queue->current_size == 0);
 }
@@ -52,7 +52,7 @@ void enqueue(queue *queue, int item)
 
 int dequeue(queue *queue)
 {
-    if (is_empty(queue))
+    if (is_queue_empty(queue))
     {
         printf("Queue underflow");
         return -1;
@@ -77,7 +77,7 @@ void print_queue(queue *queue)
 
 // -----------====================----------------
 
-int main()
+/* int main()
 {
     queue *fila = create_queue();
     enqueue(fila, 10);
@@ -95,4 +95,4 @@ int main()
     print_queue(fila);
 
     return 0;
-}
+} */
