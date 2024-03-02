@@ -1,6 +1,6 @@
 # Complexidade de um programa de computador
 
--   Suponhamos dois algoritmos que determinam se um dado número é primo ou não
+- Suponhamos dois algoritmos que determinam se um dado número é primo ou não
 
 ### Algoritmo 1
 
@@ -18,7 +18,7 @@ for i = 2 to sqrt(n)
         n is not prime
 ```
 
--   Considerando que cada divisão leve 1ms para ser realizada, temos que
+- Considerando que cada divisão leve 1ms para ser realizada, temos que
 
 | n                       | 1                              | 2                             |
 | ----------------------- | ------------------------------ | ----------------------------- |
@@ -27,7 +27,7 @@ for i = 2 to sqrt(n)
 | 1000003 = 106 + 3       | 106ms ≃ 103sec ≃ 16.66min      | √(106 + 3) - 1 ≃ 103ms ≃ 1sec |
 | 10000000019 = 1010 + 19 | 1010ms ≃ 107sec ≃ **115 dias** | 105ms ≃ 100seg ≃ **1.66min**  |
 
--   Percebe-se que com uma sutil mudança, a complexidade do algoritmo mudou drasticamente.
+- Percebe-se que com uma sutil mudança, a complexidade do algoritmo mudou drasticamente.
 
 <table>
 <tr>
@@ -63,8 +63,8 @@ for i = 2 to sqrt(n)
 
 ## Premissas
 
--   As constantes que multiplicam são ignoradas
--   As instruções dentro de um loop serão executadas quantas vezes o **máximo** permitido pelo controle de loop
+- As constantes que multiplicam são ignoradas
+- As instruções dentro de um loop serão executadas quantas vezes o **máximo** permitido pelo controle de loop
 
 ```c
 int sum_of_list(list, n)
@@ -89,22 +89,22 @@ t(n) = 4n + 4 \\ \ \\
 t(n) = cn + c’ \\
 $$
 
--   Tendo em vista que são os únicos que dependem de n, $c = C_2 + C_3$
--   $c’ = C_1 + C_2 + C_4$
+- Tendo em vista que são os únicos que dependem de n, $c = C_2 + C_3$
+- $c’ = C_1 + C_2 + C_4$
 
 ## Declarações
 
--   É importante lembrar que constantes que multiplicam são ignoradas.
--   Em uma sequência de declarações [Declaração 1, Declaração 2, ..., Declaração $n$], o tempo total equivale a
-    $$
-    Tempo \ total =  t(s1) + t(s2) + ... + t(sn)
-    $$
--   Se cada declaração for simples, o tem para cada uma dessas declarações é constante, assim como tempo total: $O(1)$
+- É importante lembrar que constantes que multiplicam são ignoradas.
+- Em uma sequência de declarações [Declaração 1, Declaração 2, ..., Declaração $n$], o tempo total equivale a
+  $$
+  Tempo \ total =  t(s1) + t(s2) + ... + t(sn)
+  $$
+- Se cada declaração for simples, o tem para cada uma dessas declarações é constante, assim como tempo total: $O(1)$
 
 ## If statements
 
--   O tempo é igual ao **maior** dos dois caminhos
--   Se o **Caminho 1** é $O(n)$ e o **Caminho 2** for $O(1)$, o pior caso de todo o `if-then-else statement` deve ser $O(n)$
+- O tempo é igual ao **maior** dos dois caminhos
+- Se o **Caminho 1** é $O(n)$ e o **Caminho 2** for $O(1)$, o pior caso de todo o `if-then-else statement` deve ser $O(n)$
 
 ```c
 if (condition) {
@@ -118,8 +118,8 @@ if (condition) {
 
 ## For loops
 
--   Como um loop executa $n$ vezes, as declarações dentro dele também irão executar $n$ vezes.
--   Assumindo que as declarações internas são $O(1)$, o tempo total para o loop é $n$, o qual tem $O(n).
+- Como um loop executa $n$ vezes, as declarações dentro dele também irão executar $n$ vezes.
+- Assumindo que as declarações internas são $O(1)$, o tempo total para o loop é $n$, o qual tem $O(n).
 
 ```c
 for (i = 1; i <= n; i++) {
@@ -129,7 +129,7 @@ for (i = 1; i <= n; i++) {
 
 ## Nested for loops
 
--   O loop interno da função interna roda $k$ vezes.
+- O loop interno da função interna roda $k$ vezes.
 
 ```c
 for (k = 1; k <= n; k++) { // roda n vezes
@@ -139,19 +139,19 @@ for (k = 1; k <= n; k++) { // roda n vezes
 }
 ```
 
--   Mesmo estando dentro de um loop externo que roda $n$ vezes, não podemos assumir de cara que o loop interno rode $n$ vezes também.
+- Mesmo estando dentro de um loop externo que roda $n$ vezes, não podemos assumir de cara que o loop interno rode $n$ vezes também.
 
 ```c
 1 (first time) + 2 (second time) + ... * n (last time)
 ```
 
--   Mesmo que não possamos fazer isso, no fim das contas, a estimativa final permanece a mesma, tendo em vista que $k$ executa $(n+1) / 2$ vezes.
+- Mesmo que não possamos fazer isso, no fim das contas, a estimativa final permanece a mesma, tendo em vista que $k$ executa $(n+1) / 2$ vezes.
 
 $$\sum_{i=1}^{n} i^2 = n(n+1)/2$$
 
 que ainda é $O(n^2)$
 
--   Utilizando outro exemplo, temos
+- Utilizando outro exemplo, temos
 
 ```c
 for (i = 1; i <= n; i++) {
@@ -163,8 +163,8 @@ for (i = 1; i <= n; i++) {
 }
 ```
 
--   A cada valor de $i$, os outros dois loops internos contribuem para $i^2$
-    $$1^2 + 2^2 + 3^2 + ... + n^2$$
+- A cada valor de $i$, os outros dois loops internos contribuem para $i^2$
+  $$1^2 + 2^2 + 3^2 + ... + n^2$$
 
 $$\sum_{i=1}^{n} i^2 = n(n+1)(2n + 1)/6$$
 
