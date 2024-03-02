@@ -20,7 +20,7 @@ stack *create_stack();
 void push(stack *stack, int item);
 int pop(stack *stack);
 int peek(stack *stack);
-int is_empty(stack *stack);
+int is_stack_empty(stack *stack);
 
 // -----------====================----------------
 
@@ -31,7 +31,7 @@ stack *create_stack()
     return new_stack;
 }
 
-int is_empty(stack *stack)
+int is_stack_empty(stack *stack)
 {
     return (stack->top == NULL);
 }
@@ -46,7 +46,7 @@ void push(stack *stack, int item)
 
 int pop(stack *stack)
 {
-    if (is_empty(stack))
+    if (is_stack_empty(stack))
     {
         printf("Stack underflow\n");
         return -1;
@@ -65,7 +65,7 @@ int pop(stack *stack)
 
 int peek(stack *stack)
 {
-    if (is_empty(stack))
+    if (is_stack_empty(stack))
     {
         printf("Stack underflow\n");
         return -1;
@@ -90,7 +90,7 @@ int main()
         number = number / 2;
     }
 
-    while (!is_empty(stack))
+    while (!is_stack_empty(stack))
     {
         printf("%d", pop(stack));
     }

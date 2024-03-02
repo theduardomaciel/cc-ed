@@ -107,21 +107,24 @@ void inserir(hash_table *ht, int key)
         node *current = ht->table[index];
         node *previous = NULL;
 
-        // Percorremos a lista até encontrar a posição correta
+        // Percorremos a lista até encontrar a posição correta (quando o nó atual for maior que a chave fornecida)
         while (current != NULL && current->key < key)
         {
-            previous = current;
-            current = current->next;
+            previous = current;      // Atualizamos o nó anterior
+            current = current->next; // Avançamos para o próximo nó
         }
 
         // Inserimos o novo nó na posição correta
         if (previous == NULL)
         {
+            // Se o elemento a ser inserido for o primeiro da lista,
+            // precisamos setar o ponteiro da tabela do novo elemento para o primeiro elemento da lista
             new_node->next = ht->table[index];
             ht->table[index] = new_node;
         }
         else
         {
+            // Caso contrário, atualizamos o ponteiro do nó anterior
             previous->next = new_node;
             new_node->next = current;
         }

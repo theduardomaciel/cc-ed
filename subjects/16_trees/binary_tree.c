@@ -18,7 +18,7 @@ binary_tree *create_empty_binary_tree();
 binary_tree *create_binary_tree(
     int item, binary_tree *left, binary_tree *right);
 binary_tree *search(binary_tree *bt, int item);
-int is_empty(binary_tree *bt);
+int is_binary_tree_empty(binary_tree *bt);
 void print_in_order(binary_tree *bt);
 void print_pre_order(binary_tree *bt);
 void print_post_order(binary_tree *bt);
@@ -41,7 +41,7 @@ binary_tree *create_binary_tree(
     return new_binary_tree;
 }
 
-int is_empty(binary_tree *bt)
+int is_binary_tree_empty(binary_tree *bt)
 {
     return (bt == NULL);
 }
@@ -138,7 +138,7 @@ binary_tree *remove_node(binary_tree *bt, int item)
 
 void print_in_order(binary_tree *bt)
 {
-    if (!is_empty(bt))
+    if (!is_binary_tree_empty(bt))
     {
         print_in_order(bt->left);
         printf("%d ", bt->item);
@@ -151,7 +151,7 @@ void print_in_order(binary_tree *bt)
 
 void print_pre_order(binary_tree *bt)
 {
-    if (!is_empty(bt))
+    if (!is_binary_tree_empty(bt))
     {
         printf("%d ", bt->item);
         print_pre_order(bt->left);
@@ -164,7 +164,7 @@ void print_pre_order(binary_tree *bt)
 
 void print_post_order(binary_tree *bt)
 {
-    if (!is_empty(bt))
+    if (!is_binary_tree_empty(bt))
     {
         print_post_order(bt->left);
         print_post_order(bt->right);
@@ -287,6 +287,15 @@ int main()
                                                                             create_binary_tree(3, NULL, NULL)),
                                                          create_binary_tree(6,
                                                                             create_binary_tree(9, create_binary_tree(8, NULL, NULL), NULL), NULL));
+
+    if (isBST(binary_search_tree, INT_MIN, INT_MAX))
+    {
+        printf("Valid binary search tree\n");
+    }
+    else
+    {
+        printf("Invalid binary search tree\n");
+    }
 
     searched = search(binary_search_tree, 3);
     if (searched != NULL)

@@ -56,7 +56,7 @@ void add_edge(graph *graph, int vertex1, int vertex2)
     vertex->next = graph->vertices[vertex1];
     graph->vertices[vertex1] = vertex;
 
-    // Grafo não direcionado. Adiciona a aresta no outro sentido.
+    // Como o grafo não é direcionado, adicionamos a aresta no outro sentido.
     vertex = create_adj_list(vertex1);
     vertex->next = graph->vertices[vertex2];
     graph->vertices[vertex2] = vertex;
