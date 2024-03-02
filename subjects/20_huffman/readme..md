@@ -2,7 +2,16 @@
 
 ## Introdução
 
-O algoritmo de Huffman é um algoritmo de compressão de dados que utiliza a codificação de Huffman para representar os dados de forma mais eficiente. A codificação de Huffman é um método de compressão que utiliza códigos de tamanho variável para representar os dados, de forma que os caracteres mais frequent
+O algoritmo de Huffman é um algoritmo de compressão de dados que utiliza a codificação de Huffman para representar os dados de forma mais eficiente.  
+A codificação de Huffman é um `método de compressão` que utiliza **códigos de tamanho variável** para representar os dados, de forma que os caracteres mais frequentes são representados por códigos menores e os caracteres menos frequentes são representados por códigos maiores.
+
+### Passo a passo
+
+1. Calcular a frequência de cada caractere no texto a ser comprimido.
+2. Criar uma fila de prioridade com base nas frequências dos caracteres.
+3. Construir uma árvore de Huffman a partir da fila de prioridade.
+4. Atribuir códigos binários para cada caractere, de acordo com a árvore de Huffman.
+5. Comprimir o texto utilizando os códigos atribuídos.
 
 ## Implementação
 
