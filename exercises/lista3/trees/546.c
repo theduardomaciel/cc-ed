@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <ctype.h>
+#include <string.h>
 
 /*
 -> Descrição
@@ -64,80 +65,6 @@ binary_tree *add(binary_tree *bt, int item)
     return bt;
 }
 
-binary_tree *parse_parenthesis_format(char *str, int *index)
-{
-    if (str[*index] == '\0')
-    {
-        return NULL;
-    }
-
-    // Pulamos os espaços
-    while (str[*index] == ' ')
-    {
-        (*index)++;
-    }
-
-    // Procuramos por um parênteses aberto
-    if (str[*index] == '(')
-    {
-        (*index)++; // Movemos para após o '('
-
-        // Iniciamos agora o processo de conversão do valor para int
-
-        // 1. Se o valor for negativo, multiplicamos por -1 (nunca se sabe, né?)
-        int value = 0;
-        int sign = 1;
-        if (str[*index] == '-')
-        {
-            sign = -1;
-            (*index)++;
-        }
-
-        // 2. Enquanto for um dígito, multiplicamos o valor por 10 e somamos o dígito, para converter o valor para int
-        while (isdigit(str[*index]))
-        {
-            value = value * 10 + (str[*index] - '0');
-            (*index)++;
-        }
-        value *= sign; // e multiplicamos pelo sinal que guardamos
-
-        // Se o valor for zero, pulamos o nó e suas subárvores
-        if (value == 0)
-        {
-            while (str[*index] != ')')
-            {
-                (*index)++;
-            }
-
-            (*index)++; // Pulamos o parênteses fechado
-
-            return NULL;
-        }
-
-        // Criamos uma árvore com o valor
-        binary_tree *node = create_binary_tree(value, NULL, NULL);
-
-        // Chamamos a função recursivamente para as subárvores da esquerda e da direita
-        node->left = parse_parenthesis_format(str, index);
-        node->right = parse_parenthesis_format(str, index);
-
-        // Pulamos os espaços e o parênteses fechado
-        while (str[*index] == ' ')
-        {
-            (*index)++;
-        }
-
-        if (str[*index] == ')')
-        {
-            (*index)++;
-        }
-
-        return node; // Por fim, retornamos a árvore
-    }
-
-    return NULL;
-}
-
 int is_binary_search_tree(binary_tree *root, int min, int max)
 {
     if (root == NULL)
@@ -152,6 +79,74 @@ int is_binary_search_tree(binary_tree *root, int min, int max)
 
     return is_binary_search_tree(root->left, min, root->item - 1) &&
            is_binary_search_tree(root->right, root->item + 1, max);
+}
+
+int find_index(char *str, int start, int end)
+{
+    if (start > end)
+    {
+        return -1;
+    }
+
+    char stack[end - start + 1];
+    int top = -1;
+
+    // Percorremos a string e empilhamos os parênteses de abertura
+    for (int i = start; i <= end; i++)
+    {
+        if (str[i] == '(')
+        {
+            stack[++top] = '(';
+        }
+        else if (str[i] == ')')
+        {
+            if (top >= 0)
+            {
+                top--;
+                if (top == -1)
+                {
+                    return i;
+                }
+            }
+        }
+    }
+    return -1;
+}
+
+binary_tree *from_string(char *str, int start, int end)
+{
+    if (start > end)
+    {
+        return NULL;
+    }
+
+    char num[25]; // Assumindo que o comprimento máximo de um número é de 25 dígitos
+    int numIndex = 0;
+
+    while (start < strlen(str) && str[start] >= '0' && str[start] <= '9')
+    {
+        num[numIndex++] = str[start++];
+    }
+    num[numIndex] = '\0';
+
+    binary_tree *root = create_empty_binary_tree(atoi(num));
+
+    int index = -1;
+
+    // Se o caractere atual for um parênteses de abertura, encontramos o índice do parênteses de fechamento correspondente
+    if (start <= end && str[start] == '(')
+    {
+        index = find_index(str, start, end);
+    }
+
+    // Se encontramos o índice do parênteses de fechamento correspondente, chamamos a função recursivamente para a subárvore esquerda e direita
+    if (index != -1)
+    {
+        root->left = from_string(str, start + 1, index - 1);
+        root->right = from_string(str, index + 2, end - 1);
+    }
+
+    return root;
 }
 
 void print_pre_order(binary_tree *bt)
@@ -169,19 +164,26 @@ int main()
     char *input = (char *)malloc(1000 * sizeof(char));
     scanf("%[^\n]", input); // Usamos isso pra pegar a string inteira, incluindo espaços
 
-    printf("Antes: %s\n", input);
+    // printf("Antes: %s\n", input);
 
-    // Como as strings de entrada possuem um parênteses a mais no início e no final, removemos eles
-    input++;
+    // Como as strings de entrada possuem um parênteses a mais no início e no final, removemos eles de cada árvore
     input[strlen(input) - 1] = '\0';
 
-    printf("Depois: %s\n", input);
+    // Removemos os espaços do input
+    int j = 0;
+    for (int i = 0; input[i]; i++)
+    {
+        if (input[i] != ' ')
+        {
+            input[j++] = input[i];
+        }
+    }
 
     int index = 0;
-    binary_tree *root = parse_parenthesis_format(input, &index); // Aqui, montamos a árvore com base na string
+    binary_tree *root = from_string(input, 1, strlen(input) - 2);
 
-    printf("Pré-ordem: ");
-    print_pre_order(root);
+    // printf("Pré-ordem: ");
+    // print_pre_order(root);
 
     // Checamos se a árvore é uma árvore de busca binária
     if (is_binary_search_tree(root, INT_MIN, INT_MAX))

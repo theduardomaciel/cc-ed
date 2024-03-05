@@ -3,19 +3,19 @@
 ## Introdução
 
 Um heap é uma árvore binária que possui a propriedade de heap, propriedade esta que garante que o valor de um nó é maior (ou menor) que os valores de seus filhos.  
-Um heap pode ser representado por um vetor, onde o nó `i` possui os filhos `2i` e `2i + 1`.
+Um heap pode ser representado por um vetor (array), onde o nó `i` possui os filhos `2i` e `2i + 1`.
 
 ### Definição
 
 - Para todo nó `i` diferente da raiz, `pai(i) >= i` (max-heap) ou `pai(i) <= i` (min-heap).
 - A altura de um heap de `n` elementos é `O(log n)`.
-- Deve estar completo, exceto talvez pelo último nível, que deve ser preenchido da esquerda para a direita.
+- Deve estar completamente preenchido, exceto talvez pelo último nível, que deve ser preenchido da esquerda para a direita.
 
 ## Operações
 
 - **Inserir (insert)**: Adiciona um elemento no heap.
 - **Remover (remove)**: Remove um elemento do heap.
-- **Construir (build)**: Constrói um heap a partir de um vetor.
+- **Construir (build)**: Constrói um heap a partir de um vetor (array).
 - **Imprimir (print)**: Imprime os elementos do heap.
 
 | Operação  | Complexidade |
@@ -27,7 +27,7 @@ Um heap pode ser representado por um vetor, onde o nó `i` possui os filhos `2i`
 
 ## Implementação
 
-A implementação de um heap pode ser feita de diversas formas, como por exemplo, utilizando um vetor. A escolha da estrutura de dados a ser utilizada depende do problema a ser resolvido.
+A implementação de um heap pode ser feita de diversas formas, como por exemplo, utilizando um vetor (array). A escolha da estrutura de dados a ser utilizada depende do problema a ser resolvido.
 
 ### Exemplo
 

@@ -48,6 +48,78 @@
     Observe a quantidade de quebras de linhas entre as informações impressas e os delimitadores entre os casos de teste, para gerar a saída no formato esperado pelo Huxley.
 */
 
+// Estrutura de uma fila
+typedef struct queue_node queue_node;
+struct queue_node
+{
+    int item;
+    queue_node *next;
+};
+
+typedef struct queue queue;
+struct queue
+{
+    int current_size;
+    queue_node *head;
+    queue_node *tail;
+};
+
+queue *create_queue()
+{
+    queue *new_queue = (queue *)malloc(sizeof(queue));
+    new_queue->current_size = 0;
+    new_queue->head = NULL;
+    new_queue->tail = NULL;
+    return new_queue;
+}
+
+int is_queue_empty(queue *queue)
+{
+    return (queue->current_size == 0);
+}
+
+void enqueue(queue *queue, int item)
+{
+    queue_node *new_node = (queue_node *)malloc(sizeof(queue_node));
+    new_node->item = item;
+    new_node->next = NULL;
+
+    if (queue->head == NULL)
+    {
+        queue->head = new_node;
+    }
+    else
+    {
+        queue->tail->next = new_node;
+    }
+
+    queue->tail = new_node;
+    queue->current_size++;
+}
+
+int dequeue(queue *queue)
+{
+    if (is_queue_empty(queue))
+    {
+        printf("Queue underflow\n");
+        return -1;
+    }
+
+    queue_node *node_to_dequeue = queue->head;
+    int dequeued = node_to_dequeue->item;
+
+    queue->head = queue->head->next;
+    queue->current_size--;
+
+    if (queue->head == NULL)
+    {
+        queue->tail = NULL;
+    }
+
+    free(node_to_dequeue);
+    return dequeued;
+}
+
 // Estrutura de um nó do grafo
 typedef struct node
 {
@@ -154,78 +226,100 @@ void bfs(graph *g, int src, int dest, int test_case)
     visited[src] = 1;
     distances[src] = 0;
 
-    // Inicializamos uma lista com o vértice de origem (essa é a fila de vértices a serem visitados)
-    // (não é necessário criar uma fila de fato, pois podemos simular uma fila utilizando uma lista encadeada, onde o primeiro elemento é o primeiro a ser visitado e novas adições são feitas no fim, a fim de simplificar o código e evitar a necessidade de implementar uma fila do zero :))
-    node *queue = (node *)malloc(sizeof(node));
-    queue->key = src;
-    queue->next = NULL;
+    // Inicializamos uma lista com o vértice de origem
+    // (essa é a fila de vértices a serem visitados)
+    queue *queue = create_queue();
+    enqueue(queue, src);
 
-    printf("\nCaso de Teste #%d - BFS(%d)", test_case, src);
-    printf("\n\n");
+    printf("Caso de Teste #%d - BFS(%d)\n\n", test_case, src);
 
     // Enquanto a fila não estiver vazia
-    while (queue != NULL)
+    while (!is_queue_empty(queue))
     {
         // Retiramos o primeiro elemento da fila
-        int current = queue->key;
-        node *temp = queue;
-        queue = queue->next;
-        free(temp);
+        int current = dequeue(queue);
 
         printf("Iniciando busca em largura a partir de %d\n", current);
 
-        // Percorremos todos os vértices adjacentes ao vértice atual em ordem crescente
-        for (node *adj = g->adj_list[current]; adj != NULL; adj = adj->next)
+        // Percorremos a lista de adjacência do vértice atual
+        node *adj_list = g->adj_list[current];
+
+        int *adjacent_vertices = (int *)malloc(g->vertices_amount * sizeof(int));
+        int count = 0;
+        while (adj_list)
         {
-            int neighbor = adj->key;
-            // printf("Visitando %d\n", neighbor);
+            adjacent_vertices[count++] = adj_list->key;
+            adj_list = adj_list->next;
+        }
 
-            // Se o vértice adjacente ainda não foi visitado
-            if (!visited[neighbor])
+        // Ordenamos os vértices adjacentes em ordem crescente
+        for (int i = 0; i < count - 1; i++)
+        {
+            for (int j = i + 1; j < count; j++)
             {
-                visited[neighbor] = 1;                        // Marcamos ele como visitado
-                distances[neighbor] = distances[current] + 1; // Atualizamos a sua distância
-                predecessors[neighbor] = current;             // E marcamos o vértice atual como seu predecessor
-
-                // Adiciona o vértice adjacente à fila
-                node *new_node = (node *)malloc(sizeof(node));
-                new_node->key = neighbor;
-                new_node->next = NULL;
-
-                // Se a fila estiver vazia, o novo nó será o primeiro
-                if (queue == NULL)
+                if (adjacent_vertices[i] > adjacent_vertices[j])
                 {
-                    queue = new_node;
-                }
-                else
-                {
-                    // Senão, adicionamos o novo nó no final da fila, para manter a ordem de visitação
-                    node *last = queue;
-                    while (last->next != NULL)
-                    {
-                        last = last->next;
-                    }
-                    last->next = new_node;
+                    int temp = adjacent_vertices[i];
+                    adjacent_vertices[i] = adjacent_vertices[j];
+                    adjacent_vertices[j] = temp;
                 }
             }
+        }
+
+        // Para cada vértice adjacente
+        for (int i = 0; i < count; i++)
+        {
+            int adjacent_vertex = adjacent_vertices[i];
+
+            // Se o vértice adjacente ainda não foi visitado
+            if (!visited[adjacent_vertex])
+            {
+                // Adicionamos o vértice adjacente à fila
+                enqueue(queue, adjacent_vertex);
+
+                visited[adjacent_vertex] = 1;
+                distances[adjacent_vertex] = distances[current] + 1;
+                predecessors[adjacent_vertex] = current;
+            }
+        }
+
+        free(adjacent_vertices);
+    }
+
+    printf("\n");
+
+    for (int i = 0; i < g->vertices_amount; ++i)
+    {
+        // Imprimimos a chave do vértice, a distância do vértice em relação ao vértice de origem, e o vértice predecessor
+        printf("%d | ", i);
+
+        // Se a distância do vértice é -1, imprimimos "-"
+        if (distances[i] == -1)
+        {
+            printf("- | ");
+        }
+        else
+        {
+            printf("%d | ", distances[i]);
+        }
+
+        // Se o vértice predecessor é -1, imprimimos "-"
+        if (predecessors[i] == -1)
+        {
+            printf("-\n");
+        }
+        else
+        {
+            printf("%d\n", predecessors[i]);
         }
     }
 
     printf("\n");
 
-    for (int i = 0; i < g->vertices_amount; i++)
-    {
-        char distance = distances[i] == -1 ? '-' : distances[i] + '0';
-        char predecessor = predecessors[i] == -1 ? '-' : predecessors[i] + '0';
-        printf("%d | %c | %c\n", i, distance, predecessor);
-    }
-
-    printf("\n");
-
-    if (predecessors[dest] == -1)
+    if (distances[dest] == -1)
     {
         // Se não há caminho entre o vértice de origem e o vértice de destino, imprimimos uma mensagem informando isso
-        printf("Sem caminho entre %d e %d", src, dest);
+        printf("Sem caminho entre %d e %d\n", src, dest);
     }
     else
     {
@@ -233,10 +327,10 @@ void bfs(graph *g, int src, int dest, int test_case)
         // obs: o printf abaixo tem que ser feito fora da chamada de print_path, pois é uma função recursiva
         printf("Caminho entre %d e %d: ", src, dest);
         print_path(predecessors, src, dest);
+        printf("\n");
     }
 
-    printf("\n\n");
-    printf("--------\n");
+    printf("\n--------\n");
 }
 
 int main()
@@ -254,7 +348,7 @@ int main()
         add_edge(g, src, dest);
     }
 
-    printf("\n--------\n");
+    printf("--------\n\n");
 
     // Realização da busca em largura para cada caso de teste
     for (int i = 0; i < test_cases; i++)
@@ -262,6 +356,7 @@ int main()
         int src, dest;
         scanf("%d %d", &src, &dest);
         bfs(g, src, dest, i + 1);
+        printf("\n");
     }
 
     return 0;

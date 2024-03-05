@@ -107,6 +107,16 @@ void disposeArvore(ARVORE_BINARIA *arvore)
     }
 }
 
+void print_pre_order(ARVORE_BINARIA *arvore)
+{
+    if (arvore)
+    {
+        printf("%d ", arvore->item.chave);
+        print_pre_order(arvore->esq);
+        print_pre_order(arvore->dir);
+    }
+}
+
 /*
 | Objetivos: Analisa se a arvore passada pode ser considerada uma arvore binaria
 |            de busca. Para isso, percorre a arvore e analisa se os nos estao
@@ -115,64 +125,44 @@ void disposeArvore(ARVORE_BINARIA *arvore)
 */
 bool eBinariaBusca(ARVORE_BINARIA *arvore)
 {
-    static TIPOCHAVE ultimaChave = -1; // pelo visto, o valor só é mantido entre as chamadas da função se colocar esse static
-
-    // Se a arvore estiver vazia, ela é uma arvore binaria de busca
-    if (vazia(arvore))
+    // print_pre_order(arvore);
+    if (arvore)
     {
-        return true;
-    }
+        // printf("Chave: %d ", arvore->item.chave);
 
-    // Se a sub-árvore esquerda não for uma árvore binaria de busca, a árvore inteira não é
-    if (!eBinariaBusca(arvore->esq))
-    {
-        return false;
-    }
-
-    // Assim como se a chave do nó atual for menor ou igual a ultima chave, a árvore não é binaria de busca
-    if (arvore->item.chave <= ultimaChave)
-    {
-        return false;
-    }
-
-    ultimaChave = arvore->item.chave; // Por fim, atualizamos a ultima chave para a chave do nó atual
-
-    return eBinariaBusca(arvore->dir); // E chamamos a função recursivamente para a sub-árvore direita
-}
-
-/*
-    IMPLEMENTAÇÃO COM PILHA:
-
-    if (vazia(arvore))
-        return true;
-
-    ARVORE_BINARIA *atual = arvore;
-    ARVORE_BINARIA *anterior = NULL;
-
-    // Inicializando a chave anterior com o valor mínimo possível
-    TIPOCHAVE chaveAnterior = INT_MIN;
-
-    // Pilha para simular a travessia da árvore
-    while (atual != NULL || !vazia(pilha)) {
-        while (atual != NULL) {
-            pilha[topo++] = atual;
-            atual = atual->esq;
+        if (arvore->esq)
+        {
+            // printf("-> esq: %d ", arvore->esq->item.chave);
+            if (arvore->esq->item.chave >= arvore->item.chave)
+            {
+                return false;
+            }
         }
 
-        atual = pilha[--topo];
+        if (arvore->dir)
+        {
+            // printf("-> dir: %d ", arvore->dir->item.chave);
+            if (arvore->dir->item.chave <= arvore->item.chave)
+            {
+                return false;
+            }
+        }
 
-        // Verifica se a chave do nó atual é maior que a chave anterior
-        if (atual->item.chave <= chaveAnterior)
+        // printf("\n");
+
+        if (!eBinariaBusca(arvore->esq))
+        {
             return false;
+        }
 
-        // Atualiza a chave anterior para a chave do nó atual
-        chaveAnterior = atual->item.chave;
-
-        atual = atual->dir;
+        if (!eBinariaBusca(arvore->dir))
+        {
+            return false;
+        }
     }
 
     return true;
-*/
+}
 
 /////////////////////////////////////////////////////
 
@@ -183,9 +173,13 @@ bool eBinariaBusca(ARVORE_BINARIA *arvore)
 void imprimirSeEArvBinBusca(ARVORE_BINARIA *arv)
 {
     if (eBinariaBusca(arv))
+    {
         printf("E binaria de busca\n");
+    }
     else
+    {
         printf("Nao e binaria de busca\n");
+    }
 }
 
 /////////////////////////////////////////////////////

@@ -31,220 +31,207 @@
 #define MAX_STRING_LENGTH 15
 #define MAX_VERTICES 100
 
-// Definição da estrutura do nó da lista de adjacência
-typedef struct adj_list
+// Estrutura para representar um nó (vértice) no grafo
+typedef struct node
 {
-    char item[MAX_STRING_LENGTH + 1]; // +1 para o caractere nulo
-    struct adj_list *next;
-} adj_list;
+    int node_number;     // Número do nó
+    int insertion_index; // Índice de inserção do nó
+    char item[MAX_STRING_LENGTH + 1];
+    struct node *next;
+} node;
 
-// Definição da estrutura do grafo
-typedef struct
+// Estrutura para representar um grafo como a questão pede, sendo direcionado e acíclico
+typedef struct directed_acyclic_graph
 {
-    adj_list *vertices[MAX_VERTICES];
-    short visited[MAX_VERTICES];
-    int vertices_amount;
+    int size;        // Número de nós no grafo
+    node **adj_list; // Lista de adjacência para representar as arestas entre os nós do grafo
 } directed_acyclic_graph;
 
-// Função para inicializar o grafo
+// Responsável por criar um grafo direcionado acíclico
 directed_acyclic_graph *create_graph()
 {
-    directed_acyclic_graph *new_graph = (directed_acyclic_graph *)malloc(sizeof(directed_acyclic_graph));
+    directed_acyclic_graph *g = (directed_acyclic_graph *)malloc(sizeof(directed_acyclic_graph));
 
-    new_graph->vertices_amount = 0;
-    for (int i = 0; i < MAX_VERTICES; i++)
+    g->size = 100;
+    g->adj_list = (node **)malloc(100 * sizeof(node *));
+
+    for (int i = 0; i < 100; i++)
     {
-        new_graph->vertices[i] = NULL;
-        new_graph->visited[i] = 0;
+        g->adj_list[i] = NULL;
     }
 
-    return new_graph;
+    return g;
 }
 
-// Função para adicionar um vértice ao grafo
-void add_vertex(directed_acyclic_graph *graph, const char *vertexData)
+// Função para adicionar um nó à lista em ordem lexicográfica
+node *insert_node(node *head, const char item[MAX_STRING_LENGTH + 1], int index)
 {
-    if (graph->vertices_amount < MAX_VERTICES)
+    // Inicializamos um novo nó
+    node *new_node = (node *)malloc(sizeof(node));
+    new_node->insertion_index = index;
+    strcpy(new_node->item, item);
+    new_node->next = NULL;
+
+    // Se a lista estiver vazia, simplesmente retornamos o novo nó
+    if (head == NULL)
     {
-        adj_list *vertex = (adj_list *)malloc(sizeof(adj_list));
-        strncpy(vertex->item, vertexData, MAX_STRING_LENGTH);
-        vertex->item[MAX_STRING_LENGTH] = '\0'; // Garante que a string termine corretamente
-        vertex->next = NULL;
-
-        graph->vertices[graph->vertices_amount++] = vertex;
-    }
-}
-
-// Função para adicionar uma aresta direcionada entre dois vértices
-void add_edge(directed_acyclic_graph *graph, const char *source_vertex, const char *destination_vertex)
-{
-    int source_index = -1, destination_index = -1;
-
-    // Procura os índices dos vértices source e destination
-    for (int i = 0; i < graph->vertices_amount; i++)
-    {
-        if (strcmp(graph->vertices[i]->item, source_vertex) == 0)
-        {
-            source_index = i;
-        }
-        if (strcmp(graph->vertices[i]->item, destination_vertex) == 0)
-        {
-            destination_index = i;
-        }
+        return new_node;
     }
 
-    // Se o vértice source não existir, adiciona-o ao grafo
-    if (source_index == -1)
+    node *current = head;
+    node *prev = NULL;
+
+    // Procuramos a posição correta para inserir o novo nó
+    while (current != NULL && strcmp(current->item, item) < 0)
     {
-        add_vertex(graph, source_vertex);
-        source_index = graph->vertices_amount - 1;
-    }
-
-    // Se o vértice destination não existir, adiciona-o ao grafo
-    if (destination_index == -1)
-    {
-        add_vertex(graph, destination_vertex);
-        destination_index = graph->vertices_amount - 1;
-    }
-
-    // Adiciona a aresta direcionada
-    adj_list *vertex = (adj_list *)malloc(sizeof(adj_list));
-
-    strncpy(vertex->item, destination_vertex, MAX_STRING_LENGTH);
-
-    vertex->item[MAX_STRING_LENGTH] = '\0';
-    vertex->next = graph->vertices[source_index]->next;
-    graph->vertices[source_index]->next = vertex;
-}
-
-// Função para imprimir o grafo
-void print_graph(directed_acyclic_graph *graph)
-{
-    printf("\nGraph:\n");
-    for (int i = 0; i < graph->vertices_amount; i++)
-    {
-        adj_list *current = graph->vertices[i];
-        printf("%s -> ", current->item);
-
+        prev = current;
         current = current->next;
-        while (current != NULL)
-        {
-            printf("%s -> ", current->item);
-            current = current->next;
-        }
-        printf("NULL\n");
     }
-}
 
-int find_index(directed_acyclic_graph *graph)
-{
-    int next_index = -1;
-
-    for (int i = 0; i < graph->vertices_amount; i++)
+    // Precisamos lidar com o caso do nó que queremos inserir ser o primeiro da lista
+    if (prev == NULL)
     {
-        // printf("%s foi visitado? %d\n", graph->vertices[i]->item, graph->visited[i]);
-        if (!graph->visited[i] && (next_index == -1 || strcmp(graph->vertices[i]->item, graph->vertices[next_index]->item) < 0))
-        {
-            next_index = i;
-        }
+        // Se for, atualizamos a cabeça da lista
+        new_node->next = current;
+        head = new_node;
+    }
+    else
+    {
+        // Se não for, atualizamos o ponteiro do nó anterior para apontar para o novo nó
+        prev->next = new_node;
+        new_node->next = current;
     }
 
-    // printf("-----------------\n");
-
-    return next_index;
+    return head;
 }
 
-void dfs_lexicographical(directed_acyclic_graph *graph, int vertex_index, char **result, int *count)
-{
-    graph->visited[vertex_index] = 1;
-    adj_list *current = graph->vertices[vertex_index]->next;
+// Para evitar código duplicado, criamos a assinatura do tipo de função de comparação
+typedef int (*CompareFunction)(node *, int);
 
+// Criamos uma função genérica de remoção
+node *remove_node_generic(node *head, int item, CompareFunction compareFunction)
+{
+    if (head == NULL)
+    {
+        return head;
+    }
+
+    node *current = head;
+    node *prev = NULL;
+
+    // Procuramos o nó que queremos remover usando a função de comparação
+    while (current != NULL && compareFunction(current, item))
+    {
+        prev = current;
+        current = current->next;
+    }
+
+    // Se não encontramos o nó, retornamos a lista original
     if (current == NULL)
     {
-        result[(*count)++] = strdup(graph->vertices[vertex_index]->item);
+        return head;
     }
 
-    while (current != NULL)
+    // Precisamos lidar com o caso do nó que queremos remover ser o primeiro da lista
+    if (prev == NULL)
     {
-        int neighbor_index = -1;
+        // Se for, atualizamos a cabeça da lista
+        head = head->next;
+    }
+    else
+    {
+        // Se não for, atualizamos o ponteiro do nó anterior para pular o nó que queremos remover
+        prev->next = current->next;
+    }
 
-        for (int i = 0; i < graph->vertices_amount; i++)
-        {
-            if (strcmp(graph->vertices[i]->item, current->item) == 0)
-            {
-                neighbor_index = i;
-                break;
-            }
-        }
+    free(current);
 
-        if (!graph->visited[neighbor_index])
-        {
-            dfs_lexicographical(graph, neighbor_index, result, count);
-        }
+    return head;
+}
 
-        current = current->next;
+// Função de comparação para remover nó pelo número do nó
+int compare_by_node_number(node *current, int item)
+{
+    return current->node_number != item;
+}
+
+// Função de comparação para remover nó pelo índice de inserção
+int compare_by_insertion_index(node *current, int item)
+{
+    return current->insertion_index != item;
+}
+
+// Função para imprimir os itens da lista
+void print_nodes(node *head)
+{
+    node *aux = head;
+    while (aux != NULL)
+    {
+        printf("%s\n", aux->item);
+        aux = aux->next;
     }
 }
 
-// Função para realizar o DFS nas folhas do grafo
-// Após a execução, as folhas são removidas do grafo
-void dfs_leaves(directed_acyclic_graph *graph)
+// Função para encontrar o índice de um nó pelo valor de seu item (char*) na lista
+int get_item_index(node *head, const char item[])
 {
-    while (1)
+    node *temp = head;
+
+    while (temp != NULL && (strcmp(temp->item, item) != 0))
     {
+        temp = temp->next;
+    }
 
-        char *result[MAX_VERTICES];
-        int count = 0;
+    return (temp != NULL) ? temp->insertion_index : -1;
+}
 
-        int start_vertex_index = find_index(graph);
+// Função que realiza a busca em profundidade no grafo
+void dfs(directed_acyclic_graph *g, node *src_nodes, int size)
+{
+    while (src_nodes != NULL)
+    {
+        node *aux_src = src_nodes;
+        node *dest_nodes = NULL;
 
-        if (start_vertex_index == -1)
+        // Processamos cada um dos nós que estão na lista de entrada
+        while (aux_src != NULL)
         {
-            break;
+            int index = get_item_index(src_nodes, aux_src->item);
+
+            if (g->adj_list[index] == NULL)
+                dest_nodes = insert_node(dest_nodes, aux_src->item, index);
+
+            aux_src = aux_src->next;
         }
 
-        printf("Procurando a partir de: %s\n", graph->vertices[start_vertex_index]->item);
+        print_nodes(dest_nodes);
 
-        dfs_lexicographical(graph, start_vertex_index, result, &count);
+        aux_src = dest_nodes;
 
-        printf("FOLHAS: ");
-        for (int i = 0; i < count; i++)
+        // Removemos tanto as arestas quanto os nós de uma só vez
+        while (aux_src != NULL)
         {
-            printf("%s ", result[i]);
-            free(result[i]);
+            for (int i = 0; i < size; i++)
+            {
+                // Removemos a aresta entre os nós
+                g->adj_list[i] = remove_node_generic(g->adj_list[i], aux_src->insertion_index, compare_by_node_number);
+            }
+            // Removemos o nó da lista
+            src_nodes = remove_node_generic(src_nodes, aux_src->insertion_index, compare_by_insertion_index);
+            aux_src = aux_src->next;
         }
-        printf("\n");
-
-        graph->visited[start_vertex_index] = 1;
     }
 }
 
-void dfs(directed_acyclic_graph *graph, int vertex_index)
+// Função responsável por adicionar uma aresta entre dois nós
+void add_edge(directed_acyclic_graph *g, int indexA, int indexB)
 {
-    graph->visited[vertex_index] = 1;
-    printf("%s ", graph->vertices[vertex_index]->item);
+    node *new_node = (node *)malloc(sizeof(node));
 
-    adj_list *current = graph->vertices[vertex_index]->next;
-    while (current != NULL)
-    {
-        int neighbor_index = -1;
-
-        for (int i = 0; i < graph->vertices_amount; i++)
-        {
-            if (strcmp(graph->vertices[i]->item, current->item) == 0)
-            {
-                neighbor_index = i;
-                break;
-            }
-        }
-
-        if (!graph->visited[neighbor_index])
-        {
-            dfs(graph, neighbor_index);
-        }
-
-        current = current->next;
-    }
+    new_node->insertion_index = 0;
+    new_node->node_number = indexB;
+    new_node->next = g->adj_list[indexA];
+    g->adj_list[indexA] = new_node;
 }
 
 int main()
@@ -255,34 +242,40 @@ int main()
     {
         directed_acyclic_graph *g = create_graph();
 
+        char itemA[16], itemB[16];
+        node *items = NULL;
+
+        int size = 0;
+
+        // Processamos cada uma das arestas
         for (int i = 0; i < n; i++)
         {
-            char a[15], b[15];
-            scanf("%s %s", a, b);
-            add_edge(g, a, b);
+            scanf("%s %s", itemA, itemB);
+
+            // Processamos cada um dos nós
+            int indexA = get_item_index(items, itemA);
+            if (indexA == -1)
+            {
+                items = insert_node(items, itemA, size);
+                indexA = size;
+                size++;
+            }
+
+            int indexB = get_item_index(items, itemB);
+            if (indexB == -1)
+            {
+                items = insert_node(items, itemB, size);
+                indexB = size;
+                size++;
+            }
+
+            // E adicionamos a aresta entre os nós
+            add_edge(g, indexA, indexB);
         }
 
-        print_graph(g);
-
-        printf("\nDFS:\n");
-        // dfs_leaves(g);
-        dfs(g, 0);
+        // Por fim, realizamos a busca em profundidade no grafo
+        dfs(g, items, size);
     }
 
     return 0;
 }
-
-// Função para liberar a memória alocada pelo grafo
-/* void free_graph(directed_acyclic_graph *graph)
-{
-    for (int i = 0; i < graph->vertices_amount; i++)
-    {
-        adj_list *current = graph->vertices[i];
-        while (current != NULL)
-        {
-            adj_list *next = current->next;
-            free(current);
-            current = next;
-        }
-    }
-} */
