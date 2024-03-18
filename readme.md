@@ -1,6 +1,11 @@
 # Estrutura de Dados
 
-Repositório contendo todos os arquivos fonte desenvolvidos durante a matéria Estrutura de Dados (ED) do curso de Graduação em Ciência da Computação (CC) na Universidade Federal de Alagoas (UFAL).
+Repositório contendo todos os diferentes conteúdos absorvidos durante a matéria Estrutura de Dados (ED) do curso de Graduação em Ciência da Computação (CC) na Universidade Federal de Alagoas (UFAL).
+
+> [!NOTE]
+> Para visualizar o projeto e seus módulos, acesse [https://github.com/theduardomaciel/projeto-ed](https://github.com/theduardomaciel/projeto-ed)
+
+<br />
 
 ### Snippets gerais
 
@@ -8,8 +13,8 @@ Repositório contendo todos os arquivos fonte desenvolvidos durante a matéria E
 #### Em C
 Para compilar e executar o código em C: `gcc [caminho].c -o [nome de saída].out && ./[nome de saída]`
 
-> [!NOTE]
-> Os arquivos compilados devem possui a extensão `.out` para serem incluídos no .gitignore e, assim, não serem enviados para o repositório remoto.
+> [!IMPORTANT]
+> Os arquivos compilados devem possuir a extensão `.out` para serem incluídos no .gitignore e, assim, não serem enviados para o repositório remoto.
 
 ______________________
 
