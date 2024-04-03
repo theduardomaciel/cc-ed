@@ -54,7 +54,6 @@ int main()
     int inicio, fim;
     scanf("%d %d", &inicio, &fim);
 
-    // Inicializamos o array de distâncias e marcamos todos os vértices como não visitados
     int distancias[1000];
     int visitado[1000];
 
@@ -64,8 +63,7 @@ int main()
         visitado[i] = 0;
     }
 
-    // A distância do vértice de início para ele mesmo é 0
-    distancias[inicio] = 0;
+    distancias[inicio] = 0; // a distância do vértice inicial para ele mesmo é 0
 
     // Enquanto houver vértices não visitados
     while (1)
@@ -73,7 +71,7 @@ int main()
         int menorDistancia = INFINITO;
         int menorVertice = -1;
 
-        // Encontramos o vértice não visitado com a menor distância
+        // procuramos pelo vértice não visitado com a menor distância
         for (int i = 0; i < numVertices; i++)
         {
             if (!visitado[i] && distancias[i] < menorDistancia)
@@ -83,34 +81,31 @@ int main()
             }
         }
 
-        // Se não encontramos nenhum vértice não visitado, saímos do loop
         if (menorVertice == -1)
         {
+            // não encontramos mais vértices não visitados, podemos sair do loop
             break;
         }
 
-        // Marcamos o vértice como visitado
-        visitado[menorVertice] = 1;
+        visitado[menorVertice] = 1; // o vértice foi visitado
 
-        // Atualizamos as distâncias dos vértices adjacentes ao vértice atual
         for (int i = 0; i < numArestas; i++)
         {
-            if (arestas[i][0] == menorVertice)
+            if (arestas[i][0] == menorVertice) // vemos se a aresta começa no menor vértice
             {
+                // o vértice adjacente deve ser o vértice de destino da aresta
                 int verticeAdjacente = arestas[i][1];
-                int peso = 1;
 
-                if (distancias[menorVertice] + peso < distancias[verticeAdjacente])
+                if (distancias[menorVertice] + 1 < distancias[verticeAdjacente])
                 {
-                    distancias[verticeAdjacente] = distancias[menorVertice] + peso;
+                    // se a distância do vértice atual até o vértice adjacente for < que a distância atual
+                    distancias[verticeAdjacente] = distancias[menorVertice] + 1;
                 }
             }
         }
     }
 
-    int menorCaminho = distancias[fim];
-
-    printf("Tamanho do menor caminho de G: %d\n", menorCaminho);
+    printf("Tamanho do menor caminho de G: %d\n", distancias[fim]);
 
     return 0;
 }
