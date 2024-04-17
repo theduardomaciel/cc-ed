@@ -1,118 +1,111 @@
 #include <stdio.h>
-#include <string.h>
-#include <math.h>
 #include <stdlib.h>
 
-/*
-    Descrição:
+#define MAX_SIZE 100
 
-    Ambrósio está jogando um RPG chamado Shinobu's Saga e está prestes a enfrentar Leviathan, o chefe final do jogo. Porém, para chegar em Leviathan, Ambrósio precisa passar por várias masmorras. Nem sempre é possível chegar ao fim da masmorra, o que significa que essa masmorra não tem saída.
+typedef struct adjList
+{
+    int value;
+    struct adjList *next;
+} adjList;
 
-    As masmorras são compostas por n salas numeradas de 0 a n-1. Cada sala têm passagens que levam a outras salas. As salas também podem ter tesouros ou não.
+typedef struct graph
+{
+    adjList *vertices[MAX_SIZE];
+    short visited[MAX_SIZE];
+} graph;
 
-    Ambrósio quer explorar toda a masmorra para pegar o máximo de tesouros. Então ele deseja saber se, dada uma masmorra, existe algum caminho partindo da entrada que chegue à saída e se é possível percorrer todas as salas dessa masmorra.
+graph *initGraph()
+{
+    graph *g = (graph *)malloc(sizeof(graph));
 
+    for (int i = 0; i < MAX_SIZE; i++)
+    {
+        g->vertices[i] = NULL;
+        g->visited[i] = 0;
+    }
 
-    Obs:
-    -   A entrada de uma masmorra de n salas é sempre na sala 0 e a saída é sempre na sala n-1.
-    -   As passagens de uma sala para outra são de mão única.
-*/
+    return g;
+}
 
-/*
-    Formato de entrada:
+adjList *initAdjList(int value)
+{
+    adjList *adj = (adjList *)malloc(sizeof(adjList));
 
-    A primeira linha da entrada consiste de dois inteiros S e P, separados por um espaço, onde S é o número de salas e P o número de passagens total da masmorra.
-    Depois seguem S linhas, cada uma delas com mais dois inteiros A e B separados por um espaço, onde A representa a sala de origem e B a sala de destino.
-    Esse par (A,B) representa uma passagem da sala A para a sala B. (0 < S <= 100 e 0 <= P < 9900)
-*/
+    adj->value = value;
+    adj->next = NULL;
 
-/*
-    Formato de saída:
+    return adj;
+}
 
-    A saída consiste de duas linhas.
-    A primeira linha deve conter a mensagem "EXISTE CAMINHO" se existir caminho da entrada até a saída da masmorra e "NAO EXISTE CAMINHO" caso contrário.
-    A segunda linha deve conter a mensagem "EH POSSIVEL PASSAR POR TODAS AS SALAS" se for possível percorrer todas as salas da masmorra e "NAO EH POSSIVEL PASSAR POR TODAS AS SALAS" caso contrário.
-    Cada uma das mensagens deve terminar com uma quebra de linha.
-*/
+void addEdge(graph *g, int v1, int v2)
+{
+    adjList *vx = initAdjList(v2);
+
+    vx->next = g->vertices[v1];
+    g->vertices[v1] = vx;
+}
+
+void dfs_recursive(int passages[MAX_SIZE][MAX_SIZE], int visited[MAX_SIZE], int roomsAmount, int currentRoom, int exitRoom, int *pathFound)
+{
+    if (*pathFound == 1 || visited[currentRoom])
+    {
+        return;
+    }
+
+    visited[currentRoom] = 1;
+
+    if (currentRoom == exitRoom)
+    {
+        *pathFound = 1;
+        return;
+    }
+
+    for (int i = 0; i < roomsAmount; i++)
+    {
+        if (passages[currentRoom][i])
+        {
+            dfs_recursive(passages, visited, roomsAmount, i, exitRoom, pathFound);
+        }
+    }
+}
 
 int main()
 {
-    int numSalas, numPassagens;
-    scanf("%d %d", &numSalas, &numPassagens);
+    int rooms, steps;
+    int from, to;
 
-    int passagens[1000][2];
-    for (int i = 0; i < numPassagens; i++)
+    scanf("%d %d", &rooms, &steps);
+
+    int passages[MAX_SIZE][MAX_SIZE] = {0};
+    int visited[MAX_SIZE] = {0};
+
+    for (int i = 0; i < steps; i++)
     {
-        scanf("%d %d", &passagens[i][0], &passagens[i][1]);
+        int originRoom, destinationRoom;
+        scanf("%d %d", &originRoom, &destinationRoom);
+
+        passages[originRoom][destinationRoom] = 1;
     }
 
-    int visitado[1000];
-    for (int i = 0; i < numSalas; i++)
+    int exitRoom = rooms - 1;
+    int pathFound = 0;
+
+    dfs_recursive(passages, visited, rooms, 0, exitRoom, &pathFound);
+
+    printf(pathFound ? "EXISTE CAMINHO\n" : "NAO EXISTE CAMINHO\n");
+
+    int allRoomsHavePassage = 1;
+    for (int i = 0; i < rooms; i++)
     {
-        visitado[i] = 0;
-    }
-
-    int entrada = 0;
-    int saida = numSalas - 1;
-
-    int caminho = 0;
-    int todasSalas = 1;
-
-    int salaAtual = entrada;
-    visitado[salaAtual] = 1;
-
-    // precisamos procurar por um caminho da entrada até a saída
-    while (salaAtual != saida)
-    {
-        int achou = 0;
-        for (int i = 0; i < numPassagens; i++)
+        if (!visited[i])
         {
-            // se a sala atual é a sala de origem da passagem e a sala de destino ainda não foi visitada
-            if (passagens[i][0] == salaAtual && visitado[passagens[i][1]] == 0)
-            {
-                salaAtual = passagens[i][1];
-                visitado[salaAtual] = 1;
-                caminho = 1;
-                achou = 1;
-                break;
-            }
-        }
-
-        // se não achamos nenhuma passagem para uma sala não visitada, não existe caminho
-        if (achou == 0)
-        {
-            caminho = 0;
+            allRoomsHavePassage = 0;
             break;
         }
     }
 
-    // verificamos se todas as salas foram visitadas
-    for (int i = 0; i < numSalas; i++)
-    {
-        if (visitado[i] == 0)
-        {
-            todasSalas = 0;
-            break;
-        }
-    }
-
-    if (caminho == 1)
-    {
-        printf("EXISTE CAMINHO\n");
-    }
-    else
-    {
-        printf("NAO EXISTE CAMINHO\n");
-    }
-
-    if (todasSalas == 1)
-    {
-        printf("EH POSSIVEL PASSAR POR TODAS AS SALAS\n");
-    }
-    else
-    {
-        printf("NAO EH POSSIVEL PASSAR POR TODAS AS SALAS\n");
-    }
+    printf(allRoomsHavePassage ? "EH POSSIVEL PASSAR POR TODAS AS SALAS\n" : "NAO EH POSSIVEL PASSAR POR TODAS AS SALAS\n");
 
     return 0;
 }

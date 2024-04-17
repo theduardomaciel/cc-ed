@@ -1,111 +1,112 @@
 #include <stdio.h>
-#include <string.h>
-#include <math.h>
 #include <stdlib.h>
 #include <limits.h>
 
-#define INFINITO INT_MAX
+#define MAX_SIZE 100
 
-/*
-    Descrição:
+typedef struct adjList
+{
+    int value;
+    struct adjList *next;
+} adjList;
 
-    Dado um grafo direcionado G, faça um programa que retorne o tamanho do menor caminho em G partindo de um vértice S até um vértice E. (S e E são vértices de G).
+typedef struct graph
+{
+    adjList *vertices[MAX_SIZE];
+    short visited[MAX_SIZE];
+} graph;
 
-    Por exemplo, no grafo abaixo:
-    0 -> 1
-    0 -> 3
-    1 -> 2
-    1 -> 3
-    2 -> 3
+graph *initGraph(int size)
+{
+    graph *g = (graph *)malloc(sizeof(graph));
 
-    Partindo de 0 até 3 temos os caminhos:
+    for (int i = 0; i < size; i++)
+    {
+        g->vertices[i] = NULL;
+        g->visited[i] = 0;
+    }
 
-    0 1 3 (tamanho = 2)
-    0 3 (tamanho = 1)
-    0 1 2 3 (tamanho = 3)
+    return g;
+}
 
-    Logo, o tamanho do menor caminho partindo de 0 até 3 é 1.
-*/
+adjList *initAdjList(int value)
+{
+    adjList *adj = (adjList *)malloc(sizeof(adjList));
 
-/*
-    Formato de entrada:
+    adj->value = value;
+    adj->next = NULL;
 
-    A entrada consiste de uma linha contendo dois inteiros V e A, onde V representa o número de vértices do grafo G e A, o número de arestas. As próximas A linhas consistem de dois inteiros V1i e V2i (i = 1, 2, 3, ..., A) representando os vértices da i-ésima aresta. Por fim, mais dois inteiros S e E representando o vértice de início e o vértice de chegada.
-*/
+    return adj;
+}
 
-/*
-    Formato de saída:
+void addEdge(graph *g, int v1, int v2)
+{
+    adjList *vx = initAdjList(v2);
 
-    Uma string com a mensagem "Tamanho do menor caminho de G: L", onde L é o valor do menor caminho seguido por uma quebra de linha.
-*/
+    vx->next = g->vertices[v1];
+    g->vertices[v1] = vx;
+}
+
+int minPath(graph *g, int size, int first, int last)
+{
+    int front = 0, rear = 0;
+    int queue[MAX_SIZE]; // fila pra implementar o BFS
+    int distances[MAX_SIZE];
+
+    for (int i = 0; i < size; i++)
+    {
+        distances[i] = INT_MAX;
+    }
+
+    queue[0] = first;
+    distances[first] = 0;
+
+    while (front <= rear)
+    {
+        int current = queue[front++]; // Primeiro elemento da fila
+
+        if (current == last)
+        {
+            return distances[current];
+        }
+
+        adjList *adj = g->vertices[current];
+        while (adj != NULL)
+        {
+            // Se o vértice adjacente (adj->value) ainda não foi visitado
+            if (distances[adj->value] == INT_MAX)
+            {
+                queue[++rear] = adj->value;
+                distances[adj->value] = distances[current] + 1;
+            }
+            adj = adj->next;
+        }
+    }
+
+    return -1; // Se o último vértice não for alcançável a partir do primeiro
+}
 
 int main()
 {
-    int numVertices, numArestas;
+    int vertices, arestas;
 
-    scanf("%d %d", &numVertices, &numArestas);
+    scanf("%i %i", &vertices, &arestas);
 
-    int arestas[1000][2];
-    for (int i = 0; i < numArestas; i++)
+    graph *g = initGraph(vertices);
+
+    for (int i = 0; i < arestas; i++)
     {
-        scanf("%d %d", &arestas[i][0], &arestas[i][1]);
+        int v1, v2;
+        scanf("%i %i", &v1, &v2);
+
+        addEdge(g, v1, v2);
     }
 
-    int inicio, fim;
-    scanf("%d %d", &inicio, &fim);
+    int first, last;
 
-    int distancias[1000];
-    int visitado[1000];
+    scanf("%i %i", &first, &last);
 
-    for (int i = 0; i < numVertices; i++)
-    {
-        distancias[i] = INFINITO;
-        visitado[i] = 0;
-    }
-
-    distancias[inicio] = 0; // a distância do vértice inicial para ele mesmo é 0
-
-    // Enquanto houver vértices não visitados
-    while (1)
-    {
-        int menorDistancia = INFINITO;
-        int menorVertice = -1;
-
-        // procuramos pelo vértice não visitado com a menor distância
-        for (int i = 0; i < numVertices; i++)
-        {
-            if (!visitado[i] && distancias[i] < menorDistancia)
-            {
-                menorDistancia = distancias[i];
-                menorVertice = i;
-            }
-        }
-
-        if (menorVertice == -1)
-        {
-            // não encontramos mais vértices não visitados, podemos sair do loop
-            break;
-        }
-
-        visitado[menorVertice] = 1; // o vértice foi visitado
-
-        for (int i = 0; i < numArestas; i++)
-        {
-            if (arestas[i][0] == menorVertice) // vemos se a aresta começa no menor vértice
-            {
-                // o vértice adjacente deve ser o vértice de destino da aresta
-                int verticeAdjacente = arestas[i][1];
-
-                if (distancias[menorVertice] + 1 < distancias[verticeAdjacente])
-                {
-                    // se a distância do vértice atual até o vértice adjacente for < que a distância atual
-                    distancias[verticeAdjacente] = distancias[menorVertice] + 1;
-                }
-            }
-        }
-    }
-
-    printf("Tamanho do menor caminho de G: %d\n", distancias[fim]);
+    printf("Tamanho do menor caminho de G: %i", minPath(g, vertices, first, last));
 
     return 0;
 }
